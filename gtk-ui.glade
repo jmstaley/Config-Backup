@@ -3,6 +3,7 @@
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="main_window">
+    <property name="title" translatable="yes">Config Backup</property>
     <signal name="destroy" handler="gtk_main_quit"/>
     <child>
       <object class="GtkVBox" id="vbox1">
@@ -23,7 +24,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="entry1">
+              <object class="GtkEntry" id="target_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">&#x25CF;</property>
@@ -43,7 +44,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkTable" id="table1">
+          <object class="GtkTable" id="checkbox_table">
             <property name="visible">True</property>
             <property name="n_rows">4</property>
             <property name="n_columns">2</property>
@@ -229,7 +230,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="clicked" handler="gtk_main_quit"/>
+                <signal name="clicked" handler="on_close_btn_clicked"/>
               </object>
               <packing>
                 <property name="expand">False</property>
