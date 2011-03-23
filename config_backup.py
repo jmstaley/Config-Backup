@@ -1,4 +1,6 @@
 # Copyright 2011 Jon Staley <jon@spandexbob.co.uk
+# inspired by the script from http://crunchbanglinux.org/forums/post/114073
+# http://crunchbanglinux.org/pastebin/905
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
