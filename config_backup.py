@@ -26,7 +26,8 @@ class Config(object):
         self.files = []
         self.extra = ''
         self.target = '%s/bak' % os.getenv('HOME')
-        self._get_config_from_file()
+        if os.path.exists(self.config_file):
+            self._get_config_from_file()
 
     def _get_config_from_file(self):
         config = ConfigParser.RawConfigParser()
