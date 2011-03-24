@@ -17,6 +17,7 @@
 
 import gtk
 import os
+import gio
 import shutil
 import ConfigParser
 
@@ -122,7 +123,19 @@ class Backup(object):
                 folder = file_path.split('/')[-1]
                 shutil.copytree(file_path, '%s/%s' % (target, folder))
             else:
-                shutil.copy2(file_path, target)
+                filename = file_path.split('/')[-1]
+                target_path = '%s/%s' % (target, filename)
+
+                if os.path.exists(target_path):
+                    os.unlink(target_path)
+
+                src = gio.File(path=file_path)
+                dest = gio.File(path=target_path)
+                src.copy_async(dest, self.copy_finished, flags=gio.FILE_COPY_OVERWRITE|gio.FILE_COPY_ALL_METADATA)
+
+    def copy_finished(self, source, result):
+        x = source.copy_finish(result)
+        print x
 
 if __name__ == '__main__':
     app = Backup()
