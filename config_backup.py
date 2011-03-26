@@ -65,15 +65,18 @@ class Backup(object):
                 folder = file_path.split('/')[-1]
                 shutil.copytree(file_path, '%s/%s' % (target, folder))
             else:
-                filename = file_path.split('/')[-1]
-                target_path = '%s/%s' % (target, filename)
+                self.copy_file(file_path, target)
 
-                if os.path.exists(target_path):
-                    os.unlink(target_path)
+    def copy_file(self, file_path, target):
+        filename = file_path.split('/')[-1]
+        target_path = '%s/%s' % (target, filename)
 
-                src = gio.File(path=file_path)
-                dest = gio.File(path=target_path)
-                src.copy_async(dest, self.copy_finished, flags=gio.FILE_COPY_OVERWRITE|gio.FILE_COPY_ALL_METADATA)
+        if os.path.exists(target_path):
+            os.unlink(target_path)
+
+        src = gio.File(path=file_path)
+        dest = gio.File(path=target_path)
+        src.copy_async(dest, self.copy_finished, flags=gio.FILE_COPY_OVERWRITE|gio.FILE_COPY_ALL_METADATA)
 
     def copy_finished(self, source, result):
         x = source.copy_finish(result)
