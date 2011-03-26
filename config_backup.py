@@ -53,71 +53,13 @@ class Config(object):
             config.write(configfile)
 
 class Backup(object):
-    def __init__(self):
-        self.config = Config()
-        self.user_home = os.getenv('HOME')
-
-        self.builder = gtk.Builder()
-        self.builder.add_from_file('gtk-ui.glade')
-        self.builder.connect_signals({'gtk_main_quit': gtk.main_quit,
-                                      'on_backup_btn_clicked': self.backup_clicked,
-                                      'on_close_btn_clicked': self.close_clicked})
-
-        table = self.builder.get_object('checkbox_table')
-        self.checkboxes = table.get_children()
-        self._set_active_checkboxes(self.config.files)
-
-        self.other_files = self.builder.get_object('other_entry')
-        self.other_files.set_text(self.config.extra)
-
-        self.target_entry = self.builder.get_object('target_entry')
-        self.target_entry.set_text(self.config.target)
-
-        self.window = self.builder.get_object('main_window')
-        self.window.show()
-
-    def _set_active_checkboxes(self, active_labels):
-        for check in self.checkboxes:
-            if check.get_label() in active_labels:
-                check.set_active(True)
-
-    def _get_active_checkboxes(self):
-        boxes = []
-        for check in self.checkboxes:
-            if check.get_active():
-                boxes.append(check)
-        return boxes
-
-    def close_clicked(self, evt):
-        files = ','.join([box.get_label() for box in self._get_active_checkboxes()])
-        self.config.save(files=files,
-                extra=self.other_files.get_text(),
-                target=self.target_entry.get_text())
-        gtk.main_quit()
-
-    def backup_clicked(self, evt):
-        files_to_backup = []
-
-        for check in self._get_active_checkboxes():
-            file_path = '%s/%s' % (self.user_home, check.get_label())
-            files_to_backup.append(file_path)
-
-        for file_path in self.other_files.get_text().split(','):
-            if file_path:
-                file_path = file_path.strip()
-                files_to_backup.append(file_path)
-
-        self.backup_files(files_to_backup)
-
-    def backup_files(self, files):
-        target = self.target_entry.get_text()
-
+    def backup_files(self, files, target):
         if not os.path.exists(target):
             os.makedirs(target)
         
         for file_path in files:
             if not file_path.startswith('/'):
-                file_path = '%s/%s' % (self.user_home, file_path)
+                file_path = '%s/%s' % (os.getenv('HOME'), file_path)
 
             if os.path.isdir(file_path):
                 folder = file_path.split('/')[-1]
@@ -135,8 +77,74 @@ class Backup(object):
 
     def copy_finished(self, source, result):
         x = source.copy_finish(result)
-        print x
+
+class BackupUI(object):
+    def __init__(self):
+        self.config = Config()
+        self.user_home = os.getenv('HOME')
+        self.backup = Backup()
+
+        self.builder = gtk.Builder()
+        self.builder.add_from_file('gtk-ui.glade')
+        self.builder.connect_signals({'gtk_main_quit': gtk.main_quit,
+                                      'on_backup_btn_clicked': self.backup_clicked,
+                                      'on_close_btn_clicked': self.close_clicked,
+                                      'on_about_activate': self.about_clicked})
+
+        table = self.builder.get_object('checkbox_table')
+        self.checkboxes = table.get_children()
+        self._set_active_checkboxes(self.config.files)
+
+        self.other_files = self.builder.get_object('other_entry')
+        self.other_files.set_text(self.config.extra)
+
+        self.target_entry = self.builder.get_object('target_entry')
+        self.target_entry.set_text(self.config.target)
+
+        self.about = self.builder.get_object('aboutdialog')
+
+        self.window = self.builder.get_object('main_window')
+        self.window.show()
+
+    def _set_active_checkboxes(self, active_labels):
+        for check in self.checkboxes:
+            if check.get_label() in active_labels:
+                check.set_active(True)
+
+    def _get_active_checkboxes(self):
+        boxes = []
+        for check in self.checkboxes:
+            if check.get_active():
+                boxes.append(check)
+        return boxes
+
+    def close_clicked(self, evt):
+        active_checkboxes = self._get_active_checkboxes()
+        files = ','.join([box.get_label() for box in active_checkboxes])
+        self.config.save(files=files,
+                extra=self.other_files.get_text(),
+                target=self.target_entry.get_text())
+        gtk.main_quit()
+
+    def backup_clicked(self, evt):
+        files_to_backup = []
+
+        for check in self._get_active_checkboxes():
+            file_path = '%s/%s' % (self.user_home, check.get_label())
+            files_to_backup.append(file_path)
+
+        for file_path in self.other_files.get_text().split(','):
+            if file_path:
+                file_path = file_path.strip()
+                files_to_backup.append(file_path)
+
+        self.backup.backup_files(files_to_backup, self.target_entry.get_text())
+
+    def about_clicked(self, evt):
+        self.about.connect('response', lambda d, r: d.destroy())
+        self.about.run()
+
 
 if __name__ == '__main__':
-    app = Backup()
+    app = BackupUI()
     gtk.main()
