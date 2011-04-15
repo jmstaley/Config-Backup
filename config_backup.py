@@ -63,7 +63,25 @@ class Backup(object):
 
             if os.path.isdir(file_path):
                 folder = file_path.split('/')[-1]
-                shutil.copytree(file_path, '%s/%s' % (target, folder))
+                target_folder = '%s/%s' % (target, folder)
+                if not os.path.exists(target_folder):
+                    os.mkdir(target_folder)
+                dirs_to_copy = []
+                files_to_copy = []
+                for path, dirs, files in os.walk(file_path):
+                    for d in dirs:
+                        if not path.endswith('/'):
+                            path = '%s/' % path
+                        old_dir = '%s%s' % (path, d)
+                        new_dir = '%s/%s' % (target,
+                                old_dir.split(file_path)[-1])
+                        if not os.path.exists(new_dir):
+                            os.mkdir(new_dir)
+                    new_loc = path.split(file_path)[-1]
+                    for f in files:
+                        src = '%s/%s' % (path, f)
+                        targ = '%s/%s/' % (target_folder, new_loc)
+                        self.copy_file(src, targ)
             else:
                 self.copy_file(file_path, target)
 
