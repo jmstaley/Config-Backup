@@ -18,7 +18,6 @@
 import gtk
 import os
 import gio
-import shutil
 import ConfigParser
 
 class Config(object):
@@ -69,14 +68,7 @@ class Backup(object):
                 dirs_to_copy = []
                 files_to_copy = []
                 for path, dirs, files in os.walk(file_path):
-                    for d in dirs:
-                        if not path.endswith('/'):
-                            path = '%s/' % path
-                        old_dir = '%s%s' % (path, d)
-                        new_dir = '%s/%s' % (target,
-                                old_dir.split(file_path)[-1])
-                        if not os.path.exists(new_dir):
-                            os.mkdir(new_dir)
+                    self.create_directories(dirs, path, file_path, target)
                     new_loc = path.split(file_path)[-1]
                     for f in files:
                         src = '%s/%s' % (path, f)
@@ -84,6 +76,16 @@ class Backup(object):
                         self.copy_file(src, targ)
             else:
                 self.copy_file(file_path, target)
+
+    def create_directories(self, dirs, path, file_path, target):
+        for d in dirs:
+            if not path.endswith('/'):
+                path = '%s/' % path
+            old_dir = '%s%s' % (path, d)
+            new_dir = '%s/%s' % (target,
+                    old_dir.split(file_path)[-1])
+            if not os.path.exists(new_dir):
+                os.mkdir(new_dir)
 
     def copy_file(self, file_path, target):
         filename = file_path.split('/')[-1]
