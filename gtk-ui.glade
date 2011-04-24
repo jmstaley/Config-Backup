@@ -4,6 +4,7 @@
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="main_window">
     <property name="title" translatable="yes">Config Backup</property>
+    <property name="window_position">center</property>
     <signal name="destroy" handler="gtk_main_quit"/>
     <child>
       <object class="GtkVBox" id="vbox1">
@@ -330,8 +331,8 @@
   </object>
   <object class="GtkAboutDialog" id="aboutdialog">
     <property name="border_width">5</property>
+    <property name="window_position">center-on-parent</property>
     <property name="type_hint">normal</property>
-    <property name="has_separator">False</property>
     <property name="program_name">Config Backup</property>
     <property name="version">0.1</property>
     <property name="license" translatable="yes">Licensed Under GPLv3 http://www.gnu.org/licenses/</property>
@@ -351,6 +352,52 @@
           </object>
           <packing>
             <property name="expand">False</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkDialog" id="progress_dialog">
+    <property name="width_request">0</property>
+    <property name="border_width">5</property>
+    <property name="title" translatable="yes">Copying files</property>
+    <property name="resizable">False</property>
+    <property name="modal">True</property>
+    <property name="window_position">center-on-parent</property>
+    <property name="type_hint">normal</property>
+    <property name="transient_for">main_window</property>
+    <child internal-child="vbox">
+      <object class="GtkVBox" id="dialog-vbox2">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child>
+          <object class="GtkProgressBar" id="progressbar">
+            <property name="width_request">300</property>
+            <property name="visible">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child internal-child="action_area">
+          <object class="GtkHButtonBox" id="dialog-action_area2">
+            <property name="visible">True</property>
+            <property name="layout_style">edge</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
             <property name="pack_type">end</property>
             <property name="position">0</property>
           </packing>
